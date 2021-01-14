@@ -1,0 +1,78 @@
+/* Icinga 2 | (c) 2012 Icinga GmbH | GPLv2+ */
+
+#include "base/configobject.hpp"
+#include "base/utility.hpp"
+#impl_include "icinga/service.hpp"
+
+library icinga;
+
+namespace icinga
+{
+
+code {{{
+/**
+ * The type of a service comment.
+ *
+ * @ingroup icinga
+ */
+enum CommentType
+{
+	CommentUser = 1,
+	CommentAcknowledgement = 4
+};
+
+class CommentNameComposer : public NameComposer
+{
+public:
+	virtual String MakeName(const String& shortName, const Object::Ptr& context) const;
+	virtual Dictionary::Ptr ParseName(const String& name) const;
+};
+}}}
+
+class Comment : ConfigObject < CommentNameComposer
+{
+	load_after Host;
+	load_after Service;
+
+	[config, protected, required, navigation(host)] name(Host) host_name {
+		navigate {{{
+			return Host::GetByName(GetHostName());
+		}}}
+	};
+	[config, protected, navigation(service)] String service_name {
+		track {{{
+			if (!oldValue.IsEmpty()) {
+				Service::Ptr service = Service::GetByNamePair(GetHostName(), oldValue);
+				DependencyGraph::RemoveDependency(this, service.get());
+			}
+
+			if (!newValue.IsEmpty()) {
+				Service::Ptr service = Service::GetByNamePair(GetHostName(), newValue);
+				DependencyGraph::AddDependency(this, service.get());
+			}
+		}}}
+		navigate {{{
+			if (GetServiceName().IsEmpty())
+				return nullptr;
+
+			Host::Ptr host = Host::GetByName(GetHostName());
+			return host->GetServiceByShortName(GetServiceName());
+		}}}
+	};
+
+	[config] Timestamp entry_time {
+		default {{{ return Utility::GetTime(); }}}
+	};
+	[config, enum] CommentType entry_type {
+		default {{{ return CommentUser; }}}
+	};
+	[config, required] String author;
+	[config, required] String text;
+	[config] bool persistent;
+	[config] Timestamp expire_time;
+	[state] int legacy_id;
+
+	[no_user_view, no_user_modify] String removed_by;
+};
+
+}

@@ -1,0 +1,31 @@
+/* Icinga 2 | (c) 2012 Icinga GmbH | GPLv2+ */
+
+#include "base/configobject.hpp"
+#include "base/function.hpp"
+
+library remote;
+
+namespace icinga
+{
+
+class ApiUser : ConfigObject
+{
+	/* No show config */
+	[no_user_view, no_user_modify] String password;
+	[deprecated, config, no_user_view] String password_hash;
+	[config] String client_cn (ClientCN);
+	[config] array(Value) permissions;
+};
+
+validator ApiUser {
+	Array permissions {
+		String "*";
+		Dictionary "*" {
+			required permission;
+			String permission;
+			Function filter;
+		};
+	};
+};
+
+}

@@ -1,0 +1,46 @@
+/* Icinga 2 | (c) 2012 Icinga GmbH | GPLv2+ */
+
+#include "icinga/customvarobject.hpp"
+#include "base/array.hpp"
+#impl_include "icinga/usergroup.hpp"
+
+library icinga;
+
+namespace icinga
+{
+
+class User : CustomVarObject
+{
+	[config] String display_name {
+		get {{{
+			if (m_DisplayName.IsEmpty())
+				return GetName();
+			else
+				return m_DisplayName;
+		}}}
+	};
+	[config, no_user_modify, required] array(name(UserGroup)) groups {
+		default {{{ return new Array(); }}}
+	};
+	[config, navigation] name(TimePeriod) period (PeriodRaw) {
+		navigate {{{
+			return TimePeriod::GetByName(GetPeriodRaw());
+		}}}
+	};
+
+	[config] array(Value) types;
+	[no_user_view, no_user_modify] int type_filter_real (TypeFilter);
+	[config] array(Value) states;
+	[no_user_view, no_user_modify] int state_filter_real (StateFilter);
+
+	[config] String email;
+	[config] String pager;
+
+	[config] bool enable_notifications {
+		default {{{ return true; }}}
+	};
+
+	[state] Timestamp last_notification;
+};
+
+}

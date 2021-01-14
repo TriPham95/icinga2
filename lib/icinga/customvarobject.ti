@@ -1,0 +1,15 @@
+/* Icinga 2 | (c) 2012 Icinga GmbH | GPLv2+ */
+
+#include "base/configobject.hpp"
+
+library icinga;
+
+namespace icinga
+{
+
+abstract class CustomVarObject : ConfigObject
+{
+	[config] Dictionary::Ptr vars;
+};
+
+}

@@ -1,0 +1,15 @@
+/* Icinga 2 | (c) 2012 Icinga GmbH | GPLv2+ */
+
+library base;
+
+namespace icinga
+{
+
+vararg_constructor class DateTime
+{
+	[state, no_storage] Timestamp value {
+		get;
+	};
+};
+
+}

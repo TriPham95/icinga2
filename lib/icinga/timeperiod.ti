@@ -1,0 +1,46 @@
+/* Icinga 2 | (c) 2012 Icinga GmbH | GPLv2+ */
+
+#include "icinga/customvarobject.hpp"
+#include "base/function.hpp"
+
+library icinga;
+
+namespace icinga
+{
+
+class TimePeriod : CustomVarObject
+{
+	[config] String display_name {
+		get {{{
+			if (m_DisplayName.IsEmpty())
+				return GetName();
+			else
+				return m_DisplayName;
+		}}}
+	};
+	[config] Dictionary::Ptr ranges;
+	[config, required] Function::Ptr update;
+	[config] bool prefer_includes {
+		default {{{ return true; }}}
+	};
+	[config, required] array(name(TimePeriod)) excludes {
+		default {{{ return new Array(); }}}
+	};
+	[config, required] array(name(TimePeriod)) includes {
+		default {{{ return new Array(); }}}
+	};
+	[state, no_user_modify] Value valid_begin;
+	[state, no_user_modify] Value valid_end;
+	[state, no_user_modify] Array::Ptr segments;
+	[no_storage] bool is_inside {
+		get;
+	};
+};
+
+validator TimePeriod {
+	Dictionary ranges {
+		String "*";
+	};
+};
+
+}

@@ -1,0 +1,47 @@
+/* Icinga 2 | (c) 2012 Icinga GmbH | GPLv2+ */
+
+#include "icinga/checkable.hpp"
+#include "icinga/customvarobject.hpp"
+#impl_include "icinga/hostgroup.hpp"
+
+library icinga;
+
+namespace icinga
+{
+
+class Host : Checkable
+{
+	load_after ApiListener;
+	load_after Endpoint;
+	load_after Zone;
+
+	[config, no_user_modify, required] array(name(HostGroup)) groups {
+		default {{{ return new Array(); }}}
+	};
+
+	[config] String display_name {
+		get {{{
+			if (m_DisplayName.IsEmpty())
+				return GetName();
+			else
+				return m_DisplayName;
+		}}}
+	};
+
+	[config] String address;
+	[config] String address6;
+
+	[enum, no_storage] HostState "state" {
+		get;
+	};
+	[enum, no_storage] HostState last_state {
+		get;
+	};
+	[enum, no_storage] HostState last_hard_state {
+		get;
+	};
+	[state] Timestamp last_state_up;
+	[state] Timestamp last_state_down;
+};
+
+}

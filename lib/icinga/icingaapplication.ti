@@ -1,0 +1,41 @@
+/* Icinga 2 | (c) 2012 Icinga GmbH | GPLv2+ */
+
+#include "base/application.hpp"
+
+library icinga;
+
+namespace icinga
+{
+
+class IcingaApplication : Application
+{
+	activation_priority -50;
+
+	[config, no_storage, virtual] String environment {
+		get;
+		set;
+		default {{{ return Application::GetAppEnvironment(); }}}
+	};
+
+	[config] bool enable_notifications {
+		default {{{ return true; }}}
+	};
+	[config] bool enable_event_handlers {
+		default {{{ return true; }}}
+	};
+	[config] bool enable_flapping {
+		default {{{ return true; }}}
+	};
+	[config] bool enable_host_checks {
+		default {{{ return true; }}}
+	};
+	[config] bool enable_service_checks {
+		default {{{ return true; }}}
+	};
+	[config] bool enable_perfdata {
+		default {{{ return true; }}}
+	};
+	[config] Dictionary::Ptr vars;
+};
+
+}

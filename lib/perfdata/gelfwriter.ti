@@ -1,0 +1,42 @@
+/* Icinga 2 | (c) 2012 Icinga GmbH | GPLv2+ */
+
+#include "base/configobject.hpp"
+
+library perfdata;
+
+namespace icinga
+{
+
+class GelfWriter : ConfigObject
+{
+	activation_priority 100;
+
+	[config] String host {
+		default {{{ return "127.0.0.1"; }}}
+	};
+	[config] String port {
+		default {{{ return "12201"; }}}
+	};
+	[config] String source {
+		default {{{ return "icinga2"; }}}
+	};
+	[config] bool enable_send_perfdata {
+		default {{{ return false; }}}
+	};
+
+	[no_user_modify] bool connected;
+	[no_user_modify] bool should_connect {
+		default {{{ return true; }}}
+	};
+	[config] bool enable_ha {
+		default {{{ return false; }}}
+	};
+    [config] bool enable_tls {
+        default {{{ return false; }}}
+    };
+    [config] String ca_path;
+    [config] String cert_path;
+    [config] String key_path;
+};
+
+}

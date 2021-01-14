@@ -1,0 +1,24 @@
+# Exclude all hidden files
+.*
+
+# Except those related to git and vagrant
+!.git*
+!.puppet*
+!.travis.yml
+!.mailmap
+
+## Tools
+*~
+tickets.pickle
+
+## Build artifacts
+build*/
+debug/
+release/
+cmake-build-debug
+/Testing/
+/install/
+/vendor/
+tools/selinux/icinga2.pp
+tools/selinux/icinga2_selinux.8
+tools/selinux/tmp

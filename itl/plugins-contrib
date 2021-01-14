@@ -1,0 +1,9 @@
+/* Icinga 2 | (c) 2012 Icinga GmbH | GPLv2+ */
+
+/**
+ * This is a directory for various contributed command definitions.
+ * Plugins should be organized by a category, e.g. database plugins are in
+ * plugins-contrib.d/databases.conf
+ */
+
+include_recursive "plugins-contrib.d"

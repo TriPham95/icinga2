@@ -1,0 +1,180 @@
+/* Icinga 2 | (c) 2012 Icinga GmbH | GPLv2+ */
+
+#include "icinga/icingaapplication.hpp"
+#include "icinga/customvarobject.hpp"
+#include "base/array.hpp"
+#impl_include "icinga/checkcommand.hpp"
+#impl_include "icinga/eventcommand.hpp"
+
+library icinga;
+
+namespace icinga
+{
+
+code {{{
+/**
+ * The acknowledgement type of a service.
+ *
+ * @ingroup icinga
+ */
+enum AcknowledgementType
+{
+	AcknowledgementNone = 0,
+	AcknowledgementNormal = 1,
+	AcknowledgementSticky = 2
+};
+}}}
+
+abstract class Checkable : CustomVarObject
+{
+	[config, required, navigation] name(CheckCommand) check_command (CheckCommandRaw) {
+		navigate {{{
+			return CheckCommand::GetByName(GetCheckCommandRaw());
+		}}}
+	};
+	[config] int max_check_attempts {
+		default {{{ return 3; }}}
+	};
+	[config, navigation] name(TimePeriod) check_period (CheckPeriodRaw) {
+		navigate {{{
+			return TimePeriod::GetByName(GetCheckPeriodRaw());
+		}}}
+	};
+	[config] Value check_timeout;
+	[config] double check_interval {
+		default {{{ return 5 * 60; }}}
+	};
+	[config] double retry_interval {
+		default {{{ return 60; }}}
+	};
+	[config, navigation] name(EventCommand) event_command (EventCommandRaw) {
+		navigate {{{
+			return EventCommand::GetByName(GetEventCommandRaw());
+		}}}
+	};
+	[config] bool volatile;
+
+	[config] bool enable_active_checks {
+		default {{{ return true; }}}
+	};
+	[config] bool enable_passive_checks {
+		default {{{ return true; }}}
+	};
+	[config] bool enable_event_handler {
+		default {{{ return true; }}}
+	};
+	[config] bool enable_notifications {
+		default {{{ return true; }}}
+	};
+	[config] bool enable_flapping {
+		default {{{ return false; }}}
+	};
+	[config] bool enable_perfdata {
+		default {{{ return true; }}}
+	};
+
+	[config, deprecated] double flapping_threshold;
+
+	[config] double flapping_threshold_low {
+		default {{{ return 25; }}}
+	};
+
+	[config] double flapping_threshold_high{
+		default {{{ return 30; }}}
+	};
+
+	[config] String notes;
+	[config] String notes_url;
+	[config] String action_url;
+	[config] String icon_image;
+	[config] String icon_image_alt;
+
+	[state] Timestamp next_check;
+	[state, no_user_view, no_user_modify] Timestamp last_check_started;
+
+	[state] int check_attempt {
+		default {{{ return 1; }}}
+	};
+	[state, enum, no_user_view, no_user_modify] ServiceState state_raw {
+		default {{{ return ServiceUnknown; }}}
+	};
+	[state, enum] StateType state_type {
+		default {{{ return StateTypeSoft; }}}
+	};
+	[state, enum, no_user_view, no_user_modify] ServiceState last_state_raw {
+		default {{{ return ServiceUnknown; }}}
+	};
+	[state, enum, no_user_view, no_user_modify] ServiceState last_hard_state_raw {
+		default {{{ return ServiceUnknown; }}}
+	};
+	[state, no_user_view, no_user_modify] "unsigned short" last_hard_states_raw {
+		default {{{ return /* current */ 99 * 100 + /* previous */ 99; }}}
+	};
+	[state, no_user_view, no_user_modify] "unsigned short" last_soft_states_raw {
+		default {{{ return /* current */ 99 * 100 + /* previous */ 99; }}}
+	};
+	[state, enum] StateType last_state_type {
+		default {{{ return StateTypeSoft; }}}
+	};
+	[state] bool last_reachable {
+		default {{{ return true; }}}
+	};
+	[state] CheckResult::Ptr last_check_result;
+	[state] Timestamp last_state_change {
+		default {{{ return Application::GetStartTime(); }}}
+	};
+	[state] Timestamp last_hard_state_change {
+		default {{{ return Application::GetStartTime(); }}}
+	};
+	[state] Timestamp last_state_unreachable;
+
+	[state] Timestamp previous_state_change {
+		default {{{ return Application::GetStartTime(); }}}
+	};
+	[no_storage] int severity {
+		get;
+	};
+	[no_storage] bool problem {
+		get;
+	};
+	[no_storage] bool handled {
+		get;
+	};
+	[no_storage] Timestamp next_update {
+		get;
+	};
+
+	[state] bool force_next_check;
+	[state] int acknowledgement (AcknowledgementRaw) {
+		default {{{ return AcknowledgementNone; }}}
+	};
+	[state] Timestamp acknowledgement_expiry;
+	[state] Timestamp acknowledgement_last_change;
+	[state] bool force_next_notification;
+	[no_storage] Timestamp last_check {
+		get;
+	};
+	[no_storage] int downtime_depth {
+		get;
+	};
+
+	[state] double flapping_current {
+		default {{{ return 0; }}}
+	};
+	[state] Timestamp flapping_last_change;
+
+	[state, no_user_view, no_user_modify] int flapping_buffer;
+	[state, no_user_view, no_user_modify] int flapping_index;
+	[state, protected] bool flapping;
+	[state, no_user_view, no_user_modify] int suppressed_notifications {
+		default {{{ return 0; }}}
+	};
+
+	[config, navigation] name(Endpoint) command_endpoint (CommandEndpointRaw) {
+		navigate {{{
+			return Endpoint::GetByName(GetCommandEndpointRaw());
+		}}}
+	};
+};
+
+}

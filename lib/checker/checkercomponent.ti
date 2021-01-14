@@ -1,0 +1,18 @@
+/* Icinga 2 | (c) 2012 Icinga GmbH | GPLv2+ */
+
+#include "base/configobject.hpp"
+
+library checker;
+
+namespace icinga
+{
+
+class CheckerComponent : ConfigObject
+{
+	activation_priority 300;
+
+	/* Has no effect. Keep this here to avoid breaking config changes. */
+	[deprecated, config] int concurrent_checks;
+};
+
+}

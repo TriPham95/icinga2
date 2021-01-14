@@ -1,0 +1,17 @@
+/* Icinga 2 | (c) 2012 Icinga GmbH | GPLv2+ */
+
+#include "base/streamlogger.hpp"
+
+library base;
+
+namespace icinga
+{
+
+class FileLogger : StreamLogger
+{
+	activation_priority -100;
+
+	[config, required] String path;
+};
+
+}

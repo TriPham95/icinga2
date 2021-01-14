@@ -1,0 +1,77 @@
+/* Icinga 2 | (c) 2012 Icinga GmbH | GPLv2+ */
+
+#include "base/configobject.hpp"
+#include "base/utility.hpp"
+#impl_include "icinga/service.hpp"
+
+library icinga;
+
+namespace icinga
+{
+
+code {{{
+class DowntimeNameComposer : public NameComposer
+{
+public:
+	virtual String MakeName(const String& shortName, const Object::Ptr& context) const;
+	virtual Dictionary::Ptr ParseName(const String& name) const;
+};
+}}}
+
+class Downtime : ConfigObject < DowntimeNameComposer
+{
+	activation_priority -10;
+
+	load_after Host;
+	load_after Service;
+
+	[config, protected, required, navigation(host)] name(Host) host_name {
+		navigate {{{
+			return Host::GetByName(GetHostName());
+		}}}
+	};
+	[config, protected, navigation(service)] String service_name {
+		track {{{
+			if (!oldValue.IsEmpty()) {
+				Service::Ptr service = Service::GetByNamePair(GetHostName(), oldValue);
+				DependencyGraph::RemoveDependency(this, service.get());
+			}
+
+			if (!newValue.IsEmpty()) {
+				Service::Ptr service = Service::GetByNamePair(GetHostName(), newValue);
+				DependencyGraph::AddDependency(this, service.get());
+			}
+		}}}
+		navigate {{{
+			if (GetServiceName().IsEmpty())
+				return nullptr;
+
+			Host::Ptr host = Host::GetByName(GetHostName());
+			return host->GetServiceByShortName(GetServiceName());
+		}}}
+	};
+
+	[config] Timestamp entry_time {
+		default {{{ return Utility::GetTime(); }}}
+	};
+	[config, required] String author;
+	[config, required] String comment;
+	[config] Timestamp start_time;
+	[config] Timestamp end_time;
+	[state] Timestamp trigger_time;
+	[config] bool fixed;
+	[config] Timestamp duration;
+	[config] String triggered_by;
+	[config] String scheduled_by;
+	[state] Array::Ptr triggers {
+		default {{{ return new Array(); }}}
+	};
+	[state] int legacy_id;
+	[state] bool was_cancelled;
+	[config] String config_owner;
+	[config] String authoritative_zone;
+
+	[no_user_view, no_user_modify] String removed_by;
+};
+
+}

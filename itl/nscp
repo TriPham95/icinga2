@@ -1,0 +1,3 @@
+/* Icinga 2 | (c) 2012 Icinga GmbH | GPLv2+ */
+
+include "command-nscp-local.conf"

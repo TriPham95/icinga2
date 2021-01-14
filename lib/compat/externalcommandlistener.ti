@@ -1,0 +1,20 @@
+/* Icinga 2 | (c) 2012 Icinga GmbH | GPLv2+ */
+
+#include "base/configobject.hpp"
+#include "base/application.hpp"
+
+library compat;
+
+namespace icinga
+{
+
+class ExternalCommandListener : ConfigObject
+{
+	activation_priority 100;
+
+	[config] String command_path {
+		default {{{ return Configuration::InitRunDir + "/cmd/icinga2.cmd"; }}}
+	};
+};
+
+}

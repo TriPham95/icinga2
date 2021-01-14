@@ -1,0 +1,8 @@
+/* Icinga 2 | (c) 2012 Icinga GmbH | GPLv2+ */
+
+/**
+ * This is the Icinga Templare Library, a collection of general purpose Icinga
+ * configuration templates.
+ */
+
+include "command-icinga.conf"

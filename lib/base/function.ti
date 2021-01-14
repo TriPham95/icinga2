@@ -1,0 +1,18 @@
+/* Icinga 2 | (c) 2012 Icinga GmbH | GPLv2+ */
+
+#include "base/configobject.hpp"
+
+library base;
+
+namespace icinga
+{
+
+abstract class Function
+{
+	[config] String "name";
+	[config] bool side_effect_free;
+	[config] bool "deprecated";
+	[config] Array::Ptr arguments;
+};
+
+}

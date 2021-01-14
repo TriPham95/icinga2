@@ -1,0 +1,24 @@
+/* Icinga 2 | (c) 2012 Icinga GmbH | GPLv2+ */
+
+#include "icinga/customvarobject.hpp"
+
+library icinga;
+
+namespace icinga
+{
+
+class UserGroup : CustomVarObject
+{
+	[config] String display_name {
+		get {{{
+			if (m_DisplayName.IsEmpty())
+				return GetName();
+			else
+				return m_DisplayName;
+		}}}
+	};
+
+	[config, no_user_modify] array(name(UserGroup)) groups;
+};
+
+}

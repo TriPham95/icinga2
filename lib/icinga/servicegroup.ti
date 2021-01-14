@@ -1,0 +1,27 @@
+/* Icinga 2 | (c) 2012 Icinga GmbH | GPLv2+ */
+
+#include "icinga/customvarobject.hpp"
+
+library icinga;
+
+namespace icinga
+{
+
+class ServiceGroup : CustomVarObject
+{
+	[config] String display_name {
+		get {{{
+			if (m_DisplayName.IsEmpty())
+				return GetName();
+			else
+				return m_DisplayName;
+		}}}
+	};
+
+	[config, no_user_modify] array(name(ServiceGroup)) groups;
+	[config] String notes;
+	[config] String notes_url;
+	[config] String action_url;
+};
+
+}

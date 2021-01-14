@@ -1,0 +1,25 @@
+/* Icinga 2 | (c) 2012 Icinga GmbH | GPLv2+ */
+
+#include "base/configobject.hpp"
+
+library remote;
+
+namespace icinga
+{
+
+class Zone : ConfigObject
+{
+	[config, navigation] name(Zone) parent (ParentRaw) {
+		navigate {{{
+			return Zone::GetByName(GetParentRaw());
+		}}}
+	};
+
+	[config] array(name(Endpoint)) endpoints (EndpointsRaw);
+	[config] bool global;
+	[no_user_modify, no_storage] array(Value) all_parents {
+		get;
+	};
+};
+
+}

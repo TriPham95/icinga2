@@ -1,0 +1,14 @@
+/* Icinga 2 | (c) 2012 Icinga GmbH | GPLv2+ */
+
+#include "icinga/command.hpp"
+
+library icinga;
+
+namespace icinga
+{
+
+class NotificationCommand : Command
+{
+};
+
+}

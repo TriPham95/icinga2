@@ -1,0 +1,42 @@
+/* Icinga 2 | (c) 2012 Icinga GmbH | GPLv2+ */
+
+#include "db_ido/dbconnection.hpp"
+
+library db_ido_mysql;
+
+namespace icinga
+{
+
+class IdoMysqlConnection : DbConnection
+{
+	activation_priority 100;
+
+	[config] String host {
+		default {{{ return "localhost"; }}}
+	};
+	[config] int port {
+		default {{{ return 3306; }}}
+	};
+	[config] String socket_path;
+	[config] String user {
+		default {{{ return "icinga"; }}}
+	};
+	[config] String password {
+		default {{{ return "icinga"; }}}
+	};
+	[config] String database {
+		default {{{ return "icinga"; }}}
+	};
+	[config] bool enable_ssl;
+	[config] String ssl_key;
+	[config] String ssl_cert;
+	[config] String ssl_ca;
+	[config] String ssl_capath;
+	[config] String ssl_cipher;
+	[config] String instance_name {
+		default {{{ return "default"; }}}
+	};
+	[config] String instance_description;
+};
+
+}

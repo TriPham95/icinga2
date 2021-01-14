@@ -1,0 +1,38 @@
+/* Icinga 2 | (c) 2012 Icinga GmbH | GPLv2+ */
+
+#include "base/configobject.hpp"
+
+library perfdata;
+
+namespace icinga
+{
+
+class GraphiteWriter : ConfigObject
+{
+	activation_priority 100;
+
+	[config] String host {
+		default {{{ return "127.0.0.1"; }}}
+	};
+	[config] String port {
+		default {{{ return "2003"; }}}
+	};
+	[config] String host_name_template {
+		default {{{ return "icinga2.$host.name$.host.$host.check_command$"; }}}
+	};
+	[config] String service_name_template {
+		default {{{ return "icinga2.$host.name$.services.$service.name$.$service.check_command$"; }}}
+	};
+        [config] bool enable_send_thresholds;
+        [config] bool enable_send_metadata;
+
+	[no_user_modify] bool connected;
+	[no_user_modify] bool should_connect {
+		default {{{ return true; }}}
+	};
+	[config] bool enable_ha {
+		default {{{ return false; }}}
+	};
+};
+
+}

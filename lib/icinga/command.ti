@@ -1,0 +1,53 @@
+/* Icinga 2 | (c) 2012 Icinga GmbH | GPLv2+ */
+
+#include "icinga/customvarobject.hpp"
+#include "base/function.hpp"
+
+library icinga;
+
+namespace icinga
+{
+
+abstract class Command : CustomVarObject
+{
+	[config] Value command (CommandLine);
+	[config] Value arguments;
+	[config] int timeout {
+		default {{{ return 60; }}}
+	};
+	[config] Dictionary::Ptr env;
+	[config, required] Function::Ptr execute;
+};
+
+validator Command {
+	String command;
+	Function command;
+	Array command {
+		String "*";
+		Function "*";
+	};
+
+	Dictionary arguments {
+		String "*";
+		Function "*";
+		Dictionary "*" {
+			String key;
+			String value;
+			Function value;
+			String description;
+			Number "required";
+			Number skip_key;
+			Number repeat_key;
+			String set_if;
+			Function set_if;
+			Number order;
+		};
+	};
+
+	Dictionary env {
+		String "*";
+		Function "*";
+	};
+};
+
+}
